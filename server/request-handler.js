@@ -32,6 +32,8 @@ var handleRequest = function(request, response) {
   response.end("Hello, World!");
 };
 
+module.exports.handleRequest = handleRequest;
+
 /* These headers will allow Cross-Origin Resource Sharing (CORS).
  * This CRUCIAL code allows this server to talk to websites that
  * are on different domains. (Your chat client is running from a url
