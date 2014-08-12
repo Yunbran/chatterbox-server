@@ -26,11 +26,11 @@ $(function() {
       app.$roomSelect.on('change', app.saveRoom);
 
       // Fetch previous messages
-      app.startSpinner();
+      // app.startSpinner();
       app.fetch(false);
 
       // Poll for new messages
-      // setInterval(app.fetch, 3000);
+      setInterval(app.fetch, 3000);
     },
     send: function(data) {
       app.startSpinner();
@@ -43,13 +43,13 @@ $(function() {
         type: 'POST',
         data: JSON.stringify(data),
         contentType: 'application/json',
-        success: function (data) {
-          console.log('chatterbox: Message sent');
+        success: function (response) {
+          console.log('chatterbox: Message', data, 'sent. Response:', response);
           // Trigger a fetch to update the messages, pass true to animate
           app.fetch();
         },
-        error: function (data) {
-          console.error('chatterbox: Failed to send message');
+        error: function (response) {
+          console.error('chatterbox: Failed to send message', response);
         }
       });
     },
@@ -59,8 +59,8 @@ $(function() {
         type: 'GET',
         contentType: 'application/json',
         data: {
-         // order: '-createdAt'
-         },
+          order: '-createdAt'
+        },
         dataType: 'json',
         success: function(data) {
           console.log('chatterbox: Messages fetched',data);

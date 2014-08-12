@@ -4,52 +4,54 @@
  * You'll have to figure out a way to export this function from
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
+ var data = {};
+  data['results'] = [];
+
 
 var handleRequest = function(request, response) {
   /* the 'request' argument comes from nodes http module. It includes info about the
   request - such as what URL the browser is requesting. */
+
 
   /* Documentation for both request and response can be found at
    * http://nodemanual.org/0.8.14/nodejs_ref_guide/http.html */
 
   console.log("Serving request type " + request.method + " for url " + request.url);
 
-  var statusCode = 200;
-
-
   /* Without this line, this server wouldn't work. See the note
    * below about CORS. */
+  var statusCode;
   var headers = defaultCorsHeaders;
-
   headers['Content-Type'] = "text/plain";
+  var content = "";
 
+  if (request.method === 'POST') {
+    statusCode = 201;
+    // console.log('dataz', request);
+    var body = "";
+    request.on('data', function(chunk){
+      body+=chunk;
+    });
+    request.on("end", function(){
+      message = JSON.parse(body);
+      message.createdAt = new Date();
+      message.updatedAt = message.createdAt;
+      message.objectId = data.results.length+1;
+      data['results'].push(message);
+    });
+  } else if (request.method === 'GET' || request.method === 'OPTIONS') {
+    statusCode = 200;
+  } else {
+    statusCode = 500;
+    console.log('non POST/GET request', request);
+  }
   /* .writeHead() tells our server what HTTP status code to send back */
   response.writeHead(statusCode, headers);
-
   /* Make sure to always call response.end() - Node will not send
    * anything back to the client until you do. The string you pass to
    * response.end() will be the body of the response - i.e. what shows
    * up in the browser.*/
-  if (request.method === 'GET') {
-    console.log(request.headers);
-
-    response.writeHead(200, headers);
-
-    var testMessage = {
-      username: 'Al',
-      text: 'Time for dinner!',
-      roomname: 'lobby',
-      createdAt: 'noon',
-      modifiedAt: '5:30pm'
-    };
-
-    resultsObj = {results: [testMessage]};
-
-    // response.write(  );
-    response.end( JSON.stringify(resultsObj) );
-  } else {
-    response.end("Hello, World!");
-  }
+  response.end(JSON.stringify(data));
 };
 
 // Export handleRequest to allow require from server file.
