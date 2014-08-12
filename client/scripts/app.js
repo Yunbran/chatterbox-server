@@ -3,7 +3,7 @@ var app;
 $(function() {
   app = {
     //Set default values
-    server: 'http://127.0.0.1:3000/',
+    server: 'http://127.0.0.1:3000/classes/messages',
     username: 'anonymous',
     roomname: 'lobby',
     lastMessageId: 0,
@@ -58,9 +58,6 @@ $(function() {
         url: app.server,
         type: 'GET',
         contentType: 'application/json',
-        data: {
-          order: '-createdAt'
-        },
         dataType: 'json',
         success: function(data) {
           console.log('chatterbox: Messages fetched',data);

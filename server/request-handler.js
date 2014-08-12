@@ -4,9 +4,10 @@
  * You'll have to figure out a way to export this function from
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
- var data = {};
-  data['results'] = [];
 
+// Server data storage:
+var data = {};
+data.results = [];
 
 var handleRequest = function(request, response) {
   /* the 'request' argument comes from nodes http module. It includes info about the
@@ -18,16 +19,15 @@ var handleRequest = function(request, response) {
 
   console.log("Serving request type " + request.method + " for url " + request.url);
 
-  /* Without this line, this server wouldn't work. See the note
-   * below about CORS. */
-  var statusCode;
+  /* Without this line, this server wouldn't work. See the note below about CORS. */
   var headers = defaultCorsHeaders;
   headers['Content-Type'] = "text/plain";
-  var content = "";
 
-  if (request.method === 'POST') {
-    statusCode = 201;
-    // console.log('dataz', request);
+  if(request.url.indexOf('/classes/') === -1){
+    console.log('URL',request.url,"does not contain /classes/",request.url==="/classes/messages");
+    response.writeHead(404, headers);
+    response.end("no-content");
+  } else if (request.method === 'POST') {
     var body = "";
     request.on('data', function(chunk){
       body+=chunk;
@@ -37,21 +37,26 @@ var handleRequest = function(request, response) {
       message.createdAt = new Date();
       message.updatedAt = message.createdAt;
       message.objectId = data.results.length+1;
-      data['results'].push(message);
+      data.results.push(message);
+      /* .writeHead() tells our server what HTTP status code to send back */
+      response.writeHead(201, headers);
+      /* Make sure to always call response.end() - Node will not send
+       * anything back to the client until you do. The string you pass to
+       * response.end() will be the body of the response - i.e. what shows
+       * up in the browser.*/
+      response.end(JSON.stringify(data));
     });
-  } else if (request.method === 'GET' || request.method === 'OPTIONS') {
-    statusCode = 200;
+  } else if (request.method === 'GET') {
+    response.writeHead(200, headers);
+    response.end(JSON.stringify(data));
+  } else if (request.method === 'OPTIONS'){
+    response.writeHead(200, headers);
+    response.end("no-content");
   } else {
-    statusCode = 500;
-    console.log('non POST/GET request', request);
+    console.log('ERROR',request.url,"!== /classes/messages",request.url==="/classes/messages");
+    response.writeHead(500, headers);
+    response.end("no-content");
   }
-  /* .writeHead() tells our server what HTTP status code to send back */
-  response.writeHead(statusCode, headers);
-  /* Make sure to always call response.end() - Node will not send
-   * anything back to the client until you do. The string you pass to
-   * response.end() will be the body of the response - i.e. what shows
-   * up in the browser.*/
-  response.end(JSON.stringify(data));
 };
 
 // Export handleRequest to allow require from server file.
