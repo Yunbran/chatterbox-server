@@ -16,6 +16,7 @@ var handleRequest = function(request, response) {
 
   var statusCode = 200;
 
+
   /* Without this line, this server wouldn't work. See the note
    * below about CORS. */
   var headers = defaultCorsHeaders;
@@ -29,9 +30,29 @@ var handleRequest = function(request, response) {
    * anything back to the client until you do. The string you pass to
    * response.end() will be the body of the response - i.e. what shows
    * up in the browser.*/
-  response.end("Hello, World!");
+  if (request.method === 'GET') {
+    console.log(request.headers);
+
+    response.writeHead(200, headers);
+
+    var testMessage = {
+      username: 'Al',
+      text: 'Time for dinner!',
+      roomname: 'lobby',
+      createdAt: 'noon',
+      modifiedAt: '5:30pm'
+    };
+
+    resultsObj = {results: [testMessage]};
+
+    response.write( JSON.stringify( resultsObj ) );
+    response.end();
+  } else {
+    response.end("Hello, World!");
+  }
 };
 
+// Export handleRequest to allow require from server file.
 module.exports.handleRequest = handleRequest;
 
 /* These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -42,6 +63,6 @@ module.exports.handleRequest = handleRequest;
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "access-control-allow-headers": "content-type, accept",
+  "access-control-allow-headers": "X-Parse-Application-Id, X-Parse-REST-API-Key, content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };

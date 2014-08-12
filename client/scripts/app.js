@@ -30,7 +30,7 @@ $(function() {
       app.fetch(false);
 
       // Poll for new messages
-      setInterval(app.fetch, 3000);
+      // setInterval(app.fetch, 3000);
     },
     send: function(data) {
       app.startSpinner();
@@ -58,9 +58,12 @@ $(function() {
         url: app.server,
         type: 'GET',
         contentType: 'application/json',
-        data: { order: '-createdAt'},
+        data: {
+         // order: '-createdAt'
+         },
+        dataType: 'json',
         success: function(data) {
-          console.log('chatterbox: Messages fetched');
+          console.log('chatterbox: Messages fetched',data);
 
           // Don't bother if we have nothing to work with
           if (!data.results || !data.results.length) { return; }
@@ -82,7 +85,7 @@ $(function() {
           }
         },
         error: function(data) {
-          console.error('chatterbox: Failed to fetch messages');
+          console.error('chatterbox: Failed to fetch messages', data);
         }
       });
     },
