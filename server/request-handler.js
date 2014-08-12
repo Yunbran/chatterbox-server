@@ -45,15 +45,15 @@ var handleRequest = function(request, response) {
 
     resultsObj = {results: [testMessage]};
 
-    response.write( JSON.stringify( resultsObj ) );
-    response.end();
+    // response.write(  );
+    response.end( JSON.stringify(resultsObj) );
   } else {
     response.end("Hello, World!");
   }
 };
 
 // Export handleRequest to allow require from server file.
-module.exports.handleRequest = handleRequest;
+module.exports.handler = handleRequest;
 
 /* These headers will allow Cross-Origin Resource Sharing (CORS).
  * This CRUCIAL code allows this server to talk to websites that
