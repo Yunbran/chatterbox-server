@@ -23,10 +23,10 @@ var handleRequest = function(request, response) {
   var headers = defaultCorsHeaders;
   headers['Content-Type'] = "text/plain";
 
-  if(request.url.indexOf('/classes/') === -1){
+  if(request.url.indexOf('/classes/') === -1 &&  request.url !== "/"){
     console.log('URL',request.url,"does not contain /classes/",request.url==="/classes/messages");
     response.writeHead(404, headers);
-    response.end("no-content");
+    response.end("404: no-content");
   } else if (request.method === 'POST') {
     var body = "";
     request.on('data', function(chunk){
@@ -51,11 +51,11 @@ var handleRequest = function(request, response) {
     response.end(JSON.stringify(data));
   } else if (request.method === 'OPTIONS'){
     response.writeHead(200, headers);
-    response.end("no-content");
+    response.end("OPTIONS: no-content");
   } else {
     console.log('ERROR',request.url,"!== /classes/messages",request.url==="/classes/messages");
     response.writeHead(500, headers);
-    response.end("no-content");
+    response.end("500: no-content");
   }
 };
 
@@ -70,6 +70,6 @@ module.exports.handler = handleRequest;
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "access-control-allow-headers": "X-Parse-Application-Id, X-Parse-REST-API-Key, content-type, accept",
+  "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
